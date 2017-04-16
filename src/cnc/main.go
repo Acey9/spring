@@ -131,7 +131,7 @@ func initLogger() {
 }
 
 func optParse() {
-	flag.StringVar(&sp.settingsFile, "c", "./spring.conf", "Look for bot config file in this directory")
+	flag.StringVar(&sp.settingsFile, "c", "./spring.conf", "Look for config file in this directory")
 	flag.BoolVar(&sp.Debug, "d", false, "Only debug")
 	flag.Parse()
 }

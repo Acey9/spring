@@ -50,7 +50,7 @@ func (admin *Admin) Handle() {
 	admin.conn.SetDeadline(time.Now().Add(120 * time.Second))
 	admin.conn.Write([]byte("\r\n"))
 	spinBuf := []byte{'-', '\\', '|', '/'}
-	for i := 0; i < 2; i++ {
+	for i := 0; i < 5; i++ {
 		admin.conn.Write(append([]byte("\r\033[37;1mLogin ing... \033[31m"), spinBuf[i%len(spinBuf)]))
 		time.Sleep(time.Duration(300) * time.Millisecond)
 	}
@@ -63,8 +63,9 @@ func (admin *Admin) Handle() {
 
 	sp.logger.Debug("login success: %s@%s", username, password)
 
-	admin.conn.Write([]byte("\r\n\033[0m"))
+	//admin.conn.Write([]byte("\r\n\033[0m"))
 	admin.conn.Write([]byte("[+] Succesfully connection\r\n"))
+	admin.conn.Write([]byte("\033[0m# "))
 
 	for {
 		admin.conn.SetDeadline(time.Now().Add(120 * time.Second))
