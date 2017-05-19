@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/tls"
 	"flag"
 	"fmt"
 	"github.com/astaxie/beego/logs"
@@ -29,7 +30,15 @@ func (h *Spring) sayHi() {
 
 func (this *Spring) start() {
 
-	server, err := net.Listen("tcp", this.settings.Server)
+	cer, err := tls.LoadX509KeyPair("server.crt", "server.key")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	config := &tls.Config{Certificates: []tls.Certificate{cer}}
+
+	//server, err := net.Listen("tcp", this.settings.Server)
+	server, err := tls.Listen("tcp", this.settings.Server, config)
 	if err != nil {
 		fmt.Println(err)
 		return

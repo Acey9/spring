@@ -9,6 +9,8 @@ type SpringSettings struct {
 	Title         string
 	Version       string
 	Server        string
+	ServerCrt     string
+	ServerKey     string
 	AdminServer   string
 	AdminName     string
 	AdminPassword string

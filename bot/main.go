@@ -1,8 +1,10 @@
 package main
 
 import (
+	"crypto/tls"
 	"fmt"
-	"net"
+	//"net"
+	"os"
 	"time"
 )
 
@@ -23,7 +25,12 @@ func (bot *Bot) Exe() error {
 }
 
 func main() {
-	conn, err := net.DialTimeout("tcp", "127.0.0.1:18888", time.Second*3)
+	args := os.Args[1:]
+	conf := &tls.Config{
+		InsecureSkipVerify: true,
+	}
+	//conn, err := net.DialTimeout("tcp", args[0], time.Second*3)
+	conn, err := tls.Dial("tcp", args[0], conf)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -39,11 +46,13 @@ func main() {
 
 	err = WritePacket(conn, login)
 	if err != nil {
+		fmt.Println(1, err)
 		return
 	}
 
 	err = WritePacket(conn, heartbeat)
 	if err != nil {
+		fmt.Println(2, err)
 		return
 	}
 
@@ -51,6 +60,7 @@ func main() {
 		conn.SetDeadline(time.Now().Add(10 * time.Second))
 		pkt, err := ReadPacket(conn)
 		if err != nil {
+			fmt.Println(3, err)
 			return
 		}
 
@@ -58,6 +68,7 @@ func main() {
 			err = WritePacket(conn, heartbeat)
 			fmt.Println("heartbeat.")
 			if err != nil {
+				fmt.Println(4, err)
 				return
 			}
 			time.Sleep(sleep)
