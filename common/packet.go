@@ -3,6 +3,7 @@ package common
 import (
 	"bytes"
 	"encoding/binary"
+	"errors"
 	"net"
 	//"fmt"
 )
@@ -20,21 +21,30 @@ type Pkt struct {
 	Body []byte
 }
 
-func (pkt *Pkt) pack() []byte {
+func (pkt *Pkt) pack() ([]byte, error) {
 	_body := pkt.Body
 	_len := len(_body) + 3
+
+	if _len > 65535 {
+		err := errors.New("packet length exceeds the maximum")
+		return nil, err
+	}
 
 	buf := new(bytes.Buffer)
 	binary.Write(buf, binary.BigEndian, uint16(_len))
 	binary.Write(buf, binary.BigEndian, pkt.Type)
 	binary.Write(buf, binary.BigEndian, _body)
 
-	return buf.Bytes()
+	return buf.Bytes(), nil
 }
 
-func Pack(_type uint8, body []byte) []byte {
+func Pack(_type uint8, body []byte) ([]byte, error) {
 	p := Pkt{0, _type, body}
-	return p.pack()
+	pkt, err := p.pack()
+	if err != nil {
+		return nil, err
+	}
+	return pkt, nil
 }
 
 func Unpack(buf []byte) *Pkt {

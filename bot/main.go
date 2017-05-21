@@ -40,9 +40,15 @@ func main() {
 
 	sleep := time.Millisecond * time.Duration(5000)
 
-	login := common.Pack(common.LOGIN, []byte("1.0 KC bid"))
+	login, err := common.Pack(common.LOGIN, []byte("1.0 KC bid"))
+	if err != nil {
+		return
+	}
 	fmt.Printf("login:% X\n", login)
-	heartbeat := common.Pack(common.HEARTBEAT, []byte("\x00"))
+	heartbeat, err := common.Pack(common.HEARTBEAT, []byte("\x00"))
+	if err != nil {
+		return
+	}
 	fmt.Println("heartbeat.len:", len(heartbeat))
 
 	err = common.WritePacket(conn, login)

@@ -22,7 +22,10 @@ func (bot *Bot) Handle() {
 	clientList.AddClient(bot)
 	defer clientList.DelClient(bot)
 
-	heartbeat := common.Pack(common.HEARTBEAT, []byte("\x00"))
+	heartbeat, err := common.Pack(common.HEARTBEAT, []byte("\x00"))
+	if err != nil {
+		return
+	}
 
 	sleep := time.Millisecond * time.Duration(1000)
 	for {

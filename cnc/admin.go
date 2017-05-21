@@ -82,7 +82,10 @@ func (admin *Admin) Handle() {
 
 		if line != "" {
 			sp.logger.Debug("input line: %s", line)
-			buf := common.Pack(common.COMMAND, []byte(line))
+			buf, err := common.Pack(common.COMMAND, []byte(line))
+			if err != nil {
+				return
+			}
 			clientList.AddCtrl(buf)
 		}
 		admin.conn.Write([]byte("\033[0m# "))
