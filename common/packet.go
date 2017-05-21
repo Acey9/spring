@@ -1,4 +1,4 @@
-package main
+package common
 
 import (
 	"bytes"
@@ -17,11 +17,11 @@ const (
 type Pkt struct {
 	Len  uint16
 	Type uint8
-	Body string
+	Body []byte
 }
 
 func (pkt *Pkt) pack() []byte {
-	_body := []byte(pkt.Body)
+	_body := pkt.Body
 	_len := len(_body) + 3
 
 	buf := new(bytes.Buffer)
@@ -32,7 +32,7 @@ func (pkt *Pkt) pack() []byte {
 	return buf.Bytes()
 }
 
-func Pack(_type uint8, body string) []byte {
+func Pack(_type uint8, body []byte) []byte {
 	p := Pkt{0, _type, body}
 	return p.pack()
 }
@@ -40,7 +40,7 @@ func Pack(_type uint8, body string) []byte {
 func Unpack(buf []byte) *Pkt {
 	_len := binary.BigEndian.Uint16(buf[0:2])
 	_type := uint8(buf[2])
-	body := string(buf[3:])
+	body := buf[3:]
 	return &Pkt{_len, _type, body}
 }
 

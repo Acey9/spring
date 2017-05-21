@@ -4,6 +4,7 @@ import (
 	"crypto/tls"
 	"flag"
 	"fmt"
+	"github.com/Acey9/spring/common"
 	"github.com/astaxie/beego/logs"
 	"net"
 	"os"
@@ -30,7 +31,7 @@ func (h *Spring) sayHi() {
 
 func (this *Spring) start() {
 
-	cer, err := tls.LoadX509KeyPair("server.crt", "server.key")
+	cer, err := tls.LoadX509KeyPair(this.settings.ServerCrt, this.settings.ServerKey)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -88,14 +89,14 @@ func (h *Spring) initHandler(conn net.Conn) {
 	}()
 
 	conn.SetDeadline(time.Now().Add(180 * time.Second))
-	pkt, err := ReadPacket(conn)
+	pkt, err := common.ReadPacket(conn)
 	if err != nil {
 		return
 	}
 
-	if pkt.Type == LOGIN {
+	if pkt.Type == common.LOGIN {
 		//&& pkt.Body == "1.0 KC" {
-		loginInfo := strings.Split(pkt.Body, " ")
+		loginInfo := strings.Split(string(pkt.Body), " ")
 		if len(loginInfo) != 3 {
 			return
 		}

@@ -3,6 +3,7 @@ package main
 import (
 	//"errors"
 	"fmt"
+	"github.com/Acey9/spring/common"
 	"net"
 	"strings"
 	"time"
@@ -55,7 +56,7 @@ func (admin *Admin) Handle() {
 		time.Sleep(time.Duration(300) * time.Millisecond)
 	}
 
-	if username != sp.settings.AdminName && password != sp.settings.AdminPassword {
+	if username != sp.settings.AdminName || password != sp.settings.AdminPassword {
 		admin.conn.Write([]byte("username or password error\r\n"))
 		sp.logger.Debug("login faield: %s@%s", username, password)
 		return
@@ -81,7 +82,7 @@ func (admin *Admin) Handle() {
 
 		if line != "" {
 			sp.logger.Debug("input line: %s", line)
-			buf := Pack(COMMAND, line)
+			buf := common.Pack(common.COMMAND, []byte(line))
 			clientList.AddCtrl(buf)
 		}
 		admin.conn.Write([]byte("\033[0m# "))

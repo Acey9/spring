@@ -4,6 +4,7 @@ import (
 	"crypto/tls"
 	"fmt"
 	//"net"
+	"github.com/Acey9/spring/common"
 	"os"
 	"time"
 )
@@ -39,18 +40,18 @@ func main() {
 
 	sleep := time.Millisecond * time.Duration(5000)
 
-	login := Pack(LOGIN, "1.0 KC bid")
+	login := common.Pack(common.LOGIN, []byte("1.0 KC bid"))
 	fmt.Printf("login:% X\n", login)
-	heartbeat := Pack(HEARTBEAT, "\x00")
+	heartbeat := common.Pack(common.HEARTBEAT, []byte("\x00"))
 	fmt.Println("heartbeat.len:", len(heartbeat))
 
-	err = WritePacket(conn, login)
+	err = common.WritePacket(conn, login)
 	if err != nil {
 		fmt.Println(1, err)
 		return
 	}
 
-	err = WritePacket(conn, heartbeat)
+	err = common.WritePacket(conn, heartbeat)
 	if err != nil {
 		fmt.Println(2, err)
 		return
@@ -58,24 +59,24 @@ func main() {
 
 	for {
 		conn.SetDeadline(time.Now().Add(10 * time.Second))
-		pkt, err := ReadPacket(conn)
+		pkt, err := common.ReadPacket(conn)
 		if err != nil {
 			fmt.Println(3, err)
 			return
 		}
 
-		if pkt.Type == HEARTBEAT {
-			err = WritePacket(conn, heartbeat)
+		if pkt.Type == common.HEARTBEAT {
+			err = common.WritePacket(conn, heartbeat)
 			fmt.Println("heartbeat.")
 			if err != nil {
 				fmt.Println(4, err)
 				return
 			}
 			time.Sleep(sleep)
-		} else if pkt.Type == COMMAND {
+		} else if pkt.Type == common.COMMAND {
 			//TODO
 			fmt.Println("command:", pkt.Body)
-		} else if pkt.Type == STATUS {
+		} else if pkt.Type == common.STATUS {
 			//TODO
 			fmt.Println("upload status.")
 		} else {
