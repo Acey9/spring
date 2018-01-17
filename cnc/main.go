@@ -29,8 +29,7 @@ func (h *Spring) sayHi() {
 	fmt.Println("Spring - c2")
 }
 
-func (this *Spring) start() {
-
+func (this *Spring) tlsListen() (err error) {
 	cer, err := tls.LoadX509KeyPair(this.settings.ServerCrt, this.settings.ServerKey)
 	if err != nil {
 		fmt.Println(err)
@@ -44,6 +43,37 @@ func (this *Spring) start() {
 		fmt.Println(err)
 		return
 	}
+
+	for {
+		conn, err := server.Accept()
+		if err != nil {
+			fmt.Println(err)
+			break
+		}
+		go this.initHandler(conn)
+	}
+	return
+}
+
+func (this *Spring) netListen() (err error) {
+	server, err := net.Listen("tcp", this.settings.Server)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	for {
+		conn, err := server.Accept()
+		if err != nil {
+			fmt.Println(err)
+			break
+		}
+		go this.initHandler(conn)
+	}
+	return
+}
+
+func (this *Spring) start() {
 
 	admin, err := net.Listen("tcp", this.settings.AdminServer)
 	if err != nil {
@@ -62,14 +92,12 @@ func (this *Spring) start() {
 		}
 	}()
 
-	for {
-		conn, err := server.Accept()
-		if err != nil {
-			fmt.Println(err)
-			break
-		}
-		go this.initHandler(conn)
+	if this.settings.TLS {
+		this.tlsListen()
+	} else {
+		this.netListen()
 	}
+
 	fmt.Println("Stopped accepting clients")
 }
 

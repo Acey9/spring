@@ -8,6 +8,7 @@ import (
 type SpringSettings struct {
 	Title         string
 	Version       string
+	TLS           bool
 	Server        string
 	ServerCrt     string
 	ServerKey     string
