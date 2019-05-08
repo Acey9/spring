@@ -1,7 +1,7 @@
 package main
 
 import (
-	//"errors"
+	"errors"
 	"fmt"
 	"github.com/Acey9/spring/common"
 	"net"
@@ -98,6 +98,10 @@ func (admin *Admin) ReadLine(masked bool) (string, error) {
 	bufPos := 0
 
 	for {
+		if bufPos > 2048-1 {
+			err := errors.New("too many inputs")
+			return "", err
+		}
 		n, err := admin.conn.Read(buf[bufPos : bufPos+1])
 		if err != nil || n != 1 {
 			return "", err
